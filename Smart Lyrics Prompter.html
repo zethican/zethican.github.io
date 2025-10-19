@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Lyrics Prompt Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .control-section {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            transition: border-color 0.3s;
+        }
+        
+        select:hover, input:hover {
+            border-color: #667eea;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-randomize {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-randomize:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+        
+        .btn-copy {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+        
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 233, 123, 0.3);
+        }
+        
+        .btn-copy.copied {
+            background: #4caf50;
+        }
+        
+        .output-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #fff3cd;
+            border-radius: 12px;
+            border: 3px solid #ffc107;
+            min-height: 100px;
+        }
+        
+        .output-section.visible {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        .output-label {
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .output-text {
+            font-size: 1.05em;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                min-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="emoji">🎵</span> Smart Lyrics Prompt Generator <span class="emoji">🎸</span></h1>
+        <p class="subtitle">Craft sophisticated, wordplay-rich songwriting prompts</p>
+        
+        <div class="grid">
+            <div class="control-section">
+                <label for="duration">Duration & Genre</label>
+                <select id="duration">
+                    <option>3-minute pop-country</option>
+                    <option>4-minute indie-folk ballad</option>
+                    <option>2.5-minute power-pop anthem</option>
+                    <option>3.5-minute alternative rock track</option>
+                    <option>3-minute synth-pop banger</option>
+                    <option>4-minute folk-rock narrative</option>
+                    <option>3-minute bedroom pop tune</option>
+                    <option>3.5-minute dream-pop ballad</option>
+                </select>
+            </div>
+            
+            <div class="control-section">
+                <label for="topic">Topic (or create your own!)</label>
+                <input type="text" id="topic" placeholder="e.g., adopting a rescue dog who rescued YOU">
+            </div>
+        </div>
+        
+        <div class="control-section">
+            <label for="technique">Wordplay Technique</label>
+            <select id="technique">
+                <option>Deploy sophisticated portmanteaus and Joycean neologisms throughout</option>
+                <option>Dense with intelligent neologisms and etymologically playful terminology</option>
+                <option>Verbally acrobatic with Carrollian wordplay and morpheme-stacking</option>
+                <option>Employ polysemous wordplay and phonaesthetic blends</option>
+                <option>Feature semantically compressed puns and lexically inventive compounds</option>
+                <option>Use morphophonological creativity and multi-register humor</option>
+            </select>
+        </div>
+        
+        <div class="control-section">
+            <label for="examples">Example Puns/Neologisms (comma-separated)</label>
+            <input type="text" id="examples" placeholder="e.g., tail-erapy, bark-itecture, paws-itive transformation">
+        </div>
+        
+        <div class="grid">
+            <div class="control-section">
+                <label for="quality">Quality Descriptors</label>
+                <select id="quality">
+                    <option>lexically inventive compound words</option>
+                    <option>semantically layered puns</option>
+                    <option>intellectually playful treatment</option>
+                    <option>linguistically sophisticated</option>
+                    <option>cerebrally witty wordplay</option>
+                    <option>etymologically clever language</option>
+                </select>
+            </div>
+            
+            <div class="control-section">
+                <label for="structure">Structural Elements</label>
+                <select id="structure">
+                    <option>Include vocal rests/instrumental breaks</option>
+                    <option>Include bridge with particularly high lexical dexterity</option>
+                    <option>Include pre-choruses and a catchy, pun-heavy hook</option>
+                    <option>Verbally acrobatic chorus with morphophonological creativity</option>
+                    <option>3 minutes with instrumental interludes</option>
+                    <option>Dense wordplay in verses, simpler chorus for singability</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="control-section">
+            <label for="tone">Tone</label>
+            <select id="tone">
+                <option>self-aware, heartwarming, cerebrally witty</option>
+                <option>melancholic yet playful, intellectually reflective</option>
+                <option>whimsical, self-deprecating, linguistically cheeky</option>
+                <option>bittersweet, verbally gymnastic, emotionally honest</option>
+                <option>upbeat, ironically earnest, intellectually silly</option>
+                <option>frustrated yet affectionate, cerebrally satirical</option>
+            </select>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-randomize" onclick="randomizeAll()">
+                <span class="emoji">🎲</span> Surprise Me!
+            </button>
+            <button class="btn-generate" onclick="generatePrompt()">
+                <span class="emoji">✨</span> Generate Prompt
+            </button>
+        </div>
+        
+        <div class="output-section" id="output">
+            <div class="output-label">📝 Your Generated Prompt:</div>
+            <div class="output-text" id="promptOutput"></div>
+            <button class="btn-copy" onclick="copyToClipboard()">
+                <span class="emoji">📋</span> Copy to Clipboard
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        const topics = [
+            "adopting a rescue dog who actually rescued YOU from loneliness",
+            "a failed relationship with your sourdough starter",
+            "procrastination as a productivity philosophy",
+            "your toxic relationship with your smartphone's autocorrect",
+            "falling in love with a coworker via office supply puns on sticky notes",
+            "your houseplant that keeps dying despite your best efforts",
+            "the coffee maker that refuses to work on Monday mornings",
+            "your GPS giving hilariously bad life advice",
+            "the gym membership you've been avoiding for six months",
+            "Sunday scaries personified as an unwelcome houseguest",
+            "your therapist knowing you better than you know yourself",
+            "thecar that's seen you through every life phase",
+            "Zoom meeting fatigue as an existential crisis",
+            "passive-aggressive email signature warfare",
+            "the office refrigerator as a microcosm of society",
+            "work-from-home pants that have become your identity"
+        ];
+        
+        const exampleSets = [
+            "tail-erapy, bark-itecture, paws-itive transformation",
+            "culture-shock, knead-y behavior, rise-and-fall-ationship",
+            "procras-ti-nation-al anthem, delay-lightful, tomorrow-morrow land",
+            "auto-incorrect assumptions, text-pectations, mis-communi-key-tion",
+            "sta-palling attraction, clip-board romance, file-ings",
+            "succ-you-later, aloe-nly, cact-us apart",
+            "brew-tiful disaster, depresso machine, grounds for concern",
+            "re-route-ine, lost-igation, turn-by-turn-moil",
+            "member-ship sinking, tread-mill of shame, work-out-standing debt",
+            "weak-end warrior, dread-lines, Sun-dread evening"
+        ];
+        
+        function randomizeAll() {
+            // Randomize duration
+            const durationSelect = document.getElementById('duration');
+            durationSelect.selectedIndex = Math.floor(Math.random() * durationSelect.options.length);
+            
+            // Randomize topic
+            document.getElementById('topic').value = topics[Math.floor(Math.random() * topics.length)];
+            
+            // Randomize technique
+            const techniqueSelect = document.getElementById('technique');
+            techniqueSelect.selectedIndex = Math.floor(Math.random() * techniqueSelect.options.length);
+            
+            // Randomize examples
+            document.getElementById('examples').value = exampleSets[Math.floor(Math.random() * exampleSets.length)];
+            
+            // Randomize quality
+            const qualitySelect = document.getElementById('quality');
+            qualitySelect.selectedIndex = Math.floor(Math.random() * qualitySelect.options.length);
+            
+            // Randomize structure
+            const structureSelect = document.getElementById('structure');
+            structureSelect.selectedIndex = Math.floor(Math.random() * structureSelect.options.length);
+            
+            // Randomize tone
+            const toneSelect = document.getElementById('tone');
+            toneSelect.selectedIndex = Math.floor(Math.random() * toneSelect.options.length);
+            
+            // Auto-generate after randomizing
+            setTimeout(generatePrompt, 300);
+        }
+        
+        function generatePrompt() {
+            const duration = document.getElementById('duration').value;
+            const topic = document.getElementById('topic').value || "an everyday experience that changed your perspective";
+            const technique = document.getElementById('technique').value;
+            const examples = document.getElementById('examples').value;
+            const quality = document.getElementById('quality').value;
+            const structure = document.getElementById('structure').value;
+            const tone = document.getElementById('tone').value;
+            
+            let prompt = `Write lyrics for a ${duration} song about ${topic}. ${technique}.`;
+            
+            if (examples.trim()) {
+                prompt += ` Use ${quality} like '${examples}'.`;
+            } else {
+                prompt += ` Use ${quality} throughout.`;
+            }
+            
+            prompt += ` ${structure}. Tone: ${tone}.`;
+            
+            const outputSection = document.getElementById('output');
+            const outputText = document.getElementById('promptOutput');
+            
+            outputText.textContent = prompt;
+            outputSection.classList.add('visible');
+            
+            // Scroll to output on mobile
+            setTimeout(() => {
+                outputSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+            
+            // Reset copy button
+            const copyBtn = document.querySelector('.btn-copy');
+            copyBtn.innerHTML = '<span class="emoji">📋</span> Copy to Clipboard';
+            copyBtn.classList.remove('copied');
+        }
+        
+        function copyToClipboard() {
+            const text = document.getElementById('promptOutput').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const copyBtn = document.querySelector('.btn-copy');
+                copyBtn.innerHTML = '<span class="emoji">✅</span> Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<span class="emoji">📋</span> Copy to Clipboard';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        // Generate a random prompt on load to show example
+        window.addEventListener('load', () => {
+            randomizeAll();
+        });
+    </script>
+</body>
+</html>
